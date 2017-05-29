@@ -35,10 +35,18 @@ if [ -z "${critical}" ] || [ -z "${warning}" ] || [ -z "${email}" ] || [ "${warn
 	usage
 fi
 
-TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
-USED_MEMORY=$( free | grep Mem| awk '{ print $3 }' )
-PERCENTAGE=$(echo "scale=2; $USED_MEMORY/$TOTAL_MEMORY" | bc)
-PERCENTAGE=${PERCENTAGE:1:2}
+#gets the total memory and used memory
+total=$( free | grep Mem: | awk '{ print $2 }' )
+used=$( free | grep Mem: | awk '{ print $3 }' )
+percentage=$(echo "scale=2; $used/$total" | bc)
+percentage=${percentage:1:2}
 
-echo $PERCENTAGE
+if [ "${percentage}" -ge "${critical}" ]; then
+	exit 2
+elif [ "${percentage}" -ge "${warning}" ]; then
+	exit 1
+else
+	exit 0
+fi
+
 
