@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#Install bc first
+#sudo yum install bc
+
 usage() {
 	echo "./memory_check -c [persentage] -w [percentage] -e [email address]"
 	echo "-c - critical threshold in percentage"
@@ -27,12 +30,15 @@ while getopts "c:w:e:" args ; do
 	esac
 done
 
-echo "critical = ${critical}"
-echo "warning = ${warning}"
-echo "email = ${email}"
-
-#check if parameters are correct. if not, returns error code 5
+#check if parameters are correct
 if [ -z "${critical}" ] || [ -z "${warning}" ] || [ -z "${email}" ] || [ "${warning}" -ge "${critical}" ]; then
 	usage
 fi
+
+TOTAL_MEMORY=$( free | grep Mem: | awk '{ print $2 }' )
+USED_MEMORY=$( free | grep Mem| awk '{ print $3 }' )
+PERCENTAGE=$(echo "scale=2; $USED_MEMORY/$TOTAL_MEMORY" | bc)
+PERCENTAGE=${PERCENTAGE:1:2}
+
+echo $PERCENTAGE
 
