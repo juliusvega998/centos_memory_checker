@@ -43,6 +43,15 @@ percentage=${percentage:1:2}
 
 if [ "${percentage}" -ge "${critical}" ]; then
 	echo "Memory is at critical level."
+
+	#formulate the email content and sent the email
+	date=$( date +%Y%m%d )
+	time=$( date +%H:%M )
+	subject="Subject: $date $time memory check - critical"
+	processes=$( ps -eo pmem,pid,cmd | sort -k 1 -nr | head -10 )
+	email_content="$subject\n$processes"
+	echo -e "$email_content" | sendmail $email
+
 	exit 2
 elif [ "${percentage}" -ge "${warning}" ]; then
 	echo "Memory is at warning level."
