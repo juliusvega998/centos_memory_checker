@@ -42,10 +42,13 @@ percentage=$(echo "scale=2; $used/$total" | bc)
 percentage=${percentage:1:2}
 
 if [ "${percentage}" -ge "${critical}" ]; then
+	echo "Memory is at critical level."
 	exit 2
 elif [ "${percentage}" -ge "${warning}" ]; then
+	echo "Memory is at warning level."
 	exit 1
 else
+	echo "Memory is at normal level."
 	exit 0
 fi
 
